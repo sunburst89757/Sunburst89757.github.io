@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>hexo fluid搭建教程</title>
+    <link href="/2022/09/03/blog-build/"/>
+    <url>/2022/09/03/blog-build/</url>
+    
+    <content type="html"><![CDATA[<p><a href="https://laosu.ml/2022/01/24/%E7%94%A8GitHub%20Actions%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2Hexo/?highlight=github+action">https://laosu.ml/2022/01/24/%E7%94%A8GitHub%20Actions%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2Hexo/?highlight=github+action</a></p><p><a href="https://sanonz.github.io/2020/deploy-a-hexo-blog-from-github-actions/">https://sanonz.github.io/2020/deploy-a-hexo-blog-from-github-actions/</a></p><p><a href="https://hexo.fluid-dev.com/posts/actions-deploy/">https://hexo.fluid-dev.com/posts/actions-deploy/</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>工具</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>js面向对象--ES5的实现</title>
     <link href="/2022/08/29/prototype/"/>
     <url>/2022/08/29/prototype/</url>
