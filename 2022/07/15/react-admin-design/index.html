@@ -1,0 +1,700 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Sunburst89757">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="react router6在后台管理系统中实现的权限方案">
+<meta property="og:type" content="article">
+<meta property="og:title" content="react admin权限设计">
+<meta property="og:url" content="http://example.com/2022/07/15/react-admin-design/index.html">
+<meta property="og:site_name" content="Sunburst89757&#39;s blog">
+<meta property="og:description" content="react router6在后台管理系统中实现的权限方案">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-09-04T08:40:38.964Z">
+<meta property="article:author" content="Sunburst89757">
+<meta property="article:tag" content="react">
+<meta property="article:tag" content="react-router6">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>react admin权限设计 - Sunburst89757&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Sunburst89757&#39;s blogs</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="react admin权限设计"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-15 00:00" pubdate>
+          星期五, 七月 15日 2022
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          51 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">react admin权限设计</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <!--truncate-->
+
+<p>react admin 权限控制方案大体上有两种方案：前端控制路由表和后端控制路由表</p>
+<h2 id="前端控制路由"><a href="#前端控制路由" class="headerlink" title="前端控制路由"></a>前端控制路由</h2><p>前文<a target="_blank" rel="noopener" href="https://sunburst89757.github.io/my-blogs/blog/react-login-design">react-ts-admin 路由权限设计方案</a>的权限是由前端控制的路由表，根据后端给予当前用户的角色，在前端生成对应路由表来实现权限管理（权限管理方案基于<a target="_blank" rel="noopener" href="https://github.com/PanJiaChen/vue-element-admin">vue-element-admin</a>的权限管理方案），但是此种方案缺点明显</p>
+<ul>
+<li>每个用户对应的角色生成的路由表由前端固定，一旦后期新增角色，需要重新部署前端应用。</li>
+<li>用户对应角色的映射路由表的生成方式不够灵活。</li>
+<li>此种方案需要前端手动注册所有的路由，router 书写繁杂</li>
+</ul>
+<h2 id="后端控制路由"><a href="#后端控制路由" class="headerlink" title="后端控制路由"></a>后端控制路由</h2><h3 id="前端动态注册路由"><a href="#前端动态注册路由" class="headerlink" title="前端动态注册路由"></a>前端动态注册路由</h3><ol>
+<li><p>后端根据用户直接返回当前用户的可访问路由 accessRoutes(后端可以根据角色映射),前端根据返回的路由动态生成对应的组件。如此，当用户访问当前用户不允许访问的路由，由于前端根本没有注册这种路由，因此直接就会匹配到*,重定向 404，因此实现页面权限管理。</p>
+</li>
+<li><p>实现时需要考虑几个问题</p>
+<ul>
+<li>系统在后端获取可访问的路由时，需要注册几个基本的路由，比如 &#x2F;login 等页面</li>
+<li>动态生成路由组件，必须使系统重新渲染，故而路由组件必须存储在 store 内（本文使用 redux）</li>
+<li><font color="red">刷新带来的问题</font></li>
+<li>一旦在用户的权限页面（后端返回的可访问页面）刷新必然会导致 store 里维护的路由组件置空，刷新后的页面重新访问改页面，路由组件没有注册必然系统崩溃。<ul>
+<li>思路一：在路由拦截组件内部，根据某个状态条件判断，重新获取 accessRoutes，但是此方法只适用于 vue-router，因为 vue-router 的拦截器是全局的，不需要确定当前路由是否注册就进入路由拦截；但是 react router 的拦截组件是在当前路由注册的条件下进行拦截，因此路由不注册，不可能进行拦截组件内部重新获取可访问路由，因此此方案不可行。</li>
+<li>思路二：由于 react-router 拦截组件是在路由注册时才能够实现拦截，故可以于登录后生成 accessRoutes，并存储于缓存里，刷新后从缓存里读取 accessRoutes 注册路由来实现访问，但是从缓存读取的 accessRoutes 经 useRoutes 注册<font color = "red">提示失败，原因未知,后续研究</font></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>实现细节—根据思路二实现</p>
+<ul>
+<li><p>路由配置</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-comment">//  路由配置 ---类似如下</span><br><span class="hljs-keyword">const</span> routes = [<br>  &#123;<br>    <span class="hljs-attr">path</span>: <span class="hljs-string">&quot;/&quot;</span>,<br>    <span class="hljs-attr">element</span>: <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">MyLayout</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">MyLayout</span>&gt;</span></span>,<br>    <span class="hljs-attr">meta</span>: &#123;<br>      <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;布局&quot;</span>,<br>    &#125;,<br>    <span class="hljs-attr">children</span>: [<br>      &#123;<br>        <span class="hljs-attr">path</span>: <span class="hljs-string">&quot;dashboard&quot;</span>,<br>        <span class="hljs-attr">element</span>: <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">LazyLoad</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/Dashboard&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">LazyLoad</span>&gt;</span></span>,<br>        <span class="hljs-attr">meta</span>: &#123;<br>          <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;首页&quot;</span>,<br>        &#125;,<br>      &#125;,<br>    ],<br>  &#125;,<br>];<br><span class="hljs-comment">//  生成react router dom 6需要的结构</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">generateRouterForReactRouter</span> = (<span class="hljs-params">routes: RouteObject[]</span>) =&gt; &#123;<br>  <span class="hljs-keyword">return</span> routes.<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">route</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (route.<span class="hljs-property">children</span>) &#123;<br>      route.<span class="hljs-property">children</span> = <span class="hljs-title function_">generateRouterForReactRouter</span>(route.<span class="hljs-property">children</span>);<br>    &#125;<br>    <span class="hljs-comment">// 路由拦截器 登录和授权页面不需要鉴权</span><br>    <span class="hljs-keyword">if</span> (<span class="hljs-title function_">isInterceptRoute</span>(route)) &#123;<br>      route.<span class="hljs-property">element</span> = (<br>        <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">RouterBeforeEach</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&#123;route.meta.title&#125;</span>&gt;</span></span><br><span class="language-xml">          &#123;route.element&#125;</span><br><span class="language-xml">        <span class="hljs-tag">&lt;/<span class="hljs-name">RouterBeforeEach</span>&gt;</span></span><br>      );<br>    &#125;<br>    <span class="hljs-keyword">return</span> route;<br>  &#125;);<br>&#125;;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>登录后获取后端生成路由</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">const</span> &#123; <span class="hljs-attr">run</span>: handleLogin &#125; = <span class="hljs-title function_">useRequest</span>(<br>  <span class="hljs-function">(<span class="hljs-params">params: userType</span>) =&gt;</span> <span class="hljs-title function_">login</span>(params),<br>  &#123;<br>    <span class="hljs-attr">manual</span>: <span class="hljs-literal">true</span>,<br>    <span class="hljs-attr">onSuccess</span>: <span class="hljs-keyword">async</span> (res) =&gt; &#123;<br>      <span class="hljs-keyword">if</span> (res.<span class="hljs-property">success</span>) &#123;<br>        cache.<span class="hljs-title function_">setItem</span>(<span class="hljs-string">&quot;token&quot;</span>, res.<span class="hljs-property">data</span>.<span class="hljs-property">token</span>);<br>        <span class="hljs-keyword">const</span> &#123; <span class="hljs-attr">data</span>: userRoutes &#125; = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getUserRoutes</span>();<br>        <span class="hljs-keyword">const</span> accessRoutes =<br>          <span class="hljs-title function_">generateAccessRoutesForReactRouter</span>(userRoutes);<br>        cache.<span class="hljs-title function_">setItem</span>(<span class="hljs-string">&quot;accessRoutes&quot;</span>, accessRoutes);<br>        <span class="hljs-title function_">dispatch</span>(gener);<br>        <span class="hljs-title function_">navigate</span>(<span class="hljs-string">&quot;/dashboard&quot;</span>);<br>      &#125;<br>    &#125;,<br>    <span class="hljs-attr">onError</span>: <span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(error, <span class="hljs-string">&quot;错误信息&quot;</span>);<br>    &#125;,<br>  &#125;<br>);<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>注册路由</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">MyRoutes</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-keyword">let</span> <span class="hljs-attr">myRouter</span>: <span class="hljs-title class_">RouteObject</span>[] = [];<br>  <span class="hljs-keyword">const</span> accessRoutes = <span class="hljs-title function_">useAppSelector</span>(<br>    <span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> state.<span class="hljs-property">permission</span>.<span class="hljs-property">accessRoutes</span><br>  );<br>  <span class="hljs-comment">// 已经成功登录后 路由从store里读取</span><br>  <span class="hljs-keyword">if</span> (accessRoutes.<span class="hljs-property">length</span> &gt; <span class="hljs-number">2</span>) &#123;<br>    myRouter = accessRoutes;<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-comment">// 刷新后 accessRoutes会重置，路由就从缓存里读取，刷新路由重新进入刷新前的路由，在拦截器里重新获取accessRoutes</span><br>    myRouter = cache.<span class="hljs-title function_">getItem</span>(<span class="hljs-string">&quot;accessRoutes&quot;</span>);<br>  &#125;<br>  <span class="hljs-keyword">const</span> routes = <span class="hljs-title function_">useRoutes</span>(myRouter);<br>  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">height:</span> &quot;<span class="hljs-attr">100vh</span>&quot; &#125;&#125;&gt;</span>&#123;routes&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;<br>&#125;);<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>路由拦截器</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">const</span> <span class="hljs-title function_">RouterBeforeEach</span> = (<span class="hljs-params">&#123; children, title &#125;: interceptOBj</span>) =&gt; &#123;<br>  <span class="hljs-keyword">const</span> accessRoutes = <span class="hljs-title function_">useAppSelector</span>(<span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> state.<span class="hljs-property">permission</span>.<span class="hljs-property">accessRoutes</span>);<br>  <span class="hljs-keyword">const</span> location = <span class="hljs-title function_">useLocation</span>();<br>  <span class="hljs-comment">// 验证是否登录（刷新）</span><br>  <span class="hljs-keyword">const</span> authLogin = <span class="hljs-title function_">useMemo</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">const</span> token = cache.<span class="hljs-title function_">getItem</span>(<span class="hljs-string">&quot;token&quot;</span>);<br>    <span class="hljs-keyword">if</span> (!token) &#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      <span class="hljs-comment">//获取用户的角色 菜单路由 权限信息</span><br>      <span class="hljs-keyword">if</span> (accessRoutes.<span class="hljs-property">length</span> === <span class="hljs-number">2</span>) &#123;<br>      <span class="hljs-comment">//   刷新导致store数据丢失，重新获取</span><br>        <span class="hljs-title function_">getUserRoutes</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">res</span>=&gt;</span>&#123;<br>        <span class="hljs-keyword">const</span>  accessRoutes = <span class="hljs-title function_">generateAccessRoutesForReactRouter</span>(res.<span class="hljs-property">data</span>);<br>      &#125;<br>    &#125;)<br>      <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>  &#125;, []);<br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-variable language_">document</span>.<span class="hljs-property">title</span> = title;<br>  &#125;);<br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      &#123;authLogin?children:<span class="hljs-tag">&lt;<span class="hljs-name">Redirect</span> <span class="hljs-attr">to</span>=<span class="hljs-string">&quot;/login&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Redirect</span>&gt;</span>&#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  );<br>&#125;;<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<p>前文<a target="_blank" rel="noopener" href="https://sunburst89757.github.io/my-blogs/blog/react-login-design#%E4%B8%80react-router-%E4%B8%8E-vue-router-%E7%9A%84%E5%8C%BA%E5%88%AB">react-ts-admin 路由权限设计方案</a>已详细说明，这里不再赘述。</p>
+<h3 id="前端注册全部路由"><a href="#前端注册全部路由" class="headerlink" title="前端注册全部路由"></a>前端注册全部路由</h3><ol>
+<li><p>由于前面方案刷新后缓存读取的 routes 配置不能够在 useRoutes 里生效，因此选择了前端手动注册全部路由，根据后端返回的路由生成一个可访问的路由进行鉴权来生成 404。</p>
+</li>
+<li><p>实现时考虑的问题</p>
+<ul>
+<li><p>前端手动注册全部路由，因此需要在路由拦截组件里除了需要判断是否登录，也需要进行逻辑校验是否有权限，无权限进入 404 的判断。</p>
+</li>
+<li><p>逻辑校验权限需要后端发送可访问的路由，这个请求存放的位置需要思考</p>
+<ul>
+<li>思路一：登录的时候直接发送这个请求，将获取的 accessRoutes 由 store 维护，避免刷新时造成 store 丢失存于缓存，但是刷新后 store 丢失的数据还需要及时获取,思路是直接存放于拦截器里再一次请求恢复 store，但是 authRoute 维护就从缓存里读取，避免计算过慢直接返回 404 了。</li>
+<li>思路二：将请求直接存放于 layout 组件，layout 不需要鉴权，并且刷新的每一个页面都是 layout 作为一级组件，就避免了 login 和拦截组件的两次请求冗余，并且也不会让登陆页面请求过多造成页面渲染阻塞</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>实现细节</p>
+<ul>
+<li><p>注册路由</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">import</span> &#123; myRouter &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./config&quot;</span>;<br><br><span class="hljs-comment">// 注册所有路由</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">MyRoutes</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-keyword">const</span> routes = <span class="hljs-title function_">useRoutes</span>(myRouter);<br>  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">height:</span> &quot;<span class="hljs-attr">100vh</span>&quot; &#125;&#125;&gt;</span>&#123;routes&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;<br>&#125;);<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>layout 获取可访问路由</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">MyLayout</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> dispatch = <span class="hljs-title function_">useAppDispatch</span>();<br>  <span class="hljs-keyword">const</span> accessRoutes = <span class="hljs-title function_">useAppSelector</span>(<br>    <span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> state.<span class="hljs-property">permission</span>.<span class="hljs-property">accessRoutes</span><br>  );<br>  <span class="hljs-comment">// 首次渲染执行  刷新时重新获取</span><br>  <span class="hljs-title function_">useAsyncEffect</span>(<span class="hljs-keyword">async</span> () =&gt; &#123;<br>    <span class="hljs-keyword">if</span> (accessRoutes.<span class="hljs-property">length</span> === <span class="hljs-number">0</span>) &#123;<br>      <span class="hljs-keyword">const</span> &#123; <span class="hljs-attr">data</span>: menuRoutes &#125; = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getUserMenuList</span>();<br>      <span class="hljs-keyword">const</span> realMenuRoutes = <span class="hljs-title function_">generateAccessRoutes</span>(menuRoutes);<br>      <span class="hljs-keyword">const</span> siderRoutes = <span class="hljs-title function_">generateRouterForBackEnd</span>(menuRoutes);<br>      cache.<span class="hljs-title function_">setItem</span>(<span class="hljs-string">&quot;accessRoutes&quot;</span>, realMenuRoutes);<br>      <span class="hljs-comment">// 生成菜单路由</span><br>      <span class="hljs-title function_">dispatch</span>(<span class="hljs-title function_">addRoutes</span>(siderRoutes));<br>      <span class="hljs-comment">// 生成可以访问的路由结构</span><br>      <span class="hljs-title function_">dispatch</span>(<span class="hljs-title function_">updateAccessRoutes</span>(realMenuRoutes));<br>    &#125;<br>  &#125;, []);<br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Layout</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">height:</span> &quot;<span class="hljs-attr">100vh</span>&quot; &#125;&#125;&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">MyHeader</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;toggle&#125;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">MyHeader</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">Layout</span>&gt;</span></span><br><span class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">MySider</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">MySider</span>&gt;</span></span><br><span class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">MyContent</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">MyContent</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;/<span class="hljs-name">Layout</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">Layout</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/&gt;</span></span><br>  );<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>拦截器</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">const</span> <span class="hljs-title function_">RouterBeforeEach</span> = (<span class="hljs-params">&#123; children, title &#125;: interceptOBj</span>) =&gt; &#123;<br>  <span class="hljs-keyword">const</span> accessRoutes = <span class="hljs-title function_">useAppSelector</span>(<br>    <span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> state.<span class="hljs-property">permission</span>.<span class="hljs-property">accessRoutes</span><br>  );<br>  <span class="hljs-keyword">const</span> location = <span class="hljs-title function_">useLocation</span>();<br>  <span class="hljs-comment">// 验证是否登录</span><br>  <span class="hljs-keyword">const</span> authLogin = <span class="hljs-title function_">useMemo</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">const</span> token = cache.<span class="hljs-title function_">getItem</span>(<span class="hljs-string">&quot;token&quot;</span>);<br>    <span class="hljs-keyword">if</span> (!token) &#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>  &#125;, []);<br>  <span class="hljs-keyword">const</span> authRoute = <span class="hljs-title function_">useMemo</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (!cache.<span class="hljs-title function_">getItem</span>(<span class="hljs-string">&quot;accessRoutes&quot;</span>)) &#123;<br>      <span class="hljs-keyword">return</span> accessRoutes.<span class="hljs-title function_">includes</span>(location.<span class="hljs-property">pathname</span>);<br>    &#125;<br>    <span class="hljs-keyword">return</span> cache.<span class="hljs-title function_">getItem</span>(<span class="hljs-string">&quot;accessRoutes&quot;</span>).<span class="hljs-title function_">includes</span>(location.<span class="hljs-property">pathname</span>);<br>  &#125;, [location.<span class="hljs-property">pathname</span>, accessRoutes]);<br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-variable language_">document</span>.<span class="hljs-property">title</span> = title;<br>  &#125;);<br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      &#123;authLogin ? (</span><br><span class="language-xml">        authRoute ? (</span><br><span class="language-xml">          children</span><br><span class="language-xml">        ) : (</span><br><span class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">Redirect</span> <span class="hljs-attr">to</span>=<span class="hljs-string">&quot;/404&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Redirect</span>&gt;</span></span><br><span class="language-xml">        )</span><br><span class="language-xml">      ) : (</span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">Redirect</span> <span class="hljs-attr">to</span>=<span class="hljs-string">&quot;/login&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Redirect</span>&gt;</span></span><br><span class="language-xml">      )&#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  );<br>&#125;;<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/react/">#react</a>
+      
+        <a href="/tags/react-router6/">#react-router6</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>react admin权限设计</div>
+      <div>http://example.com/2022/07/15/react-admin-design/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sunburst89757</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年7月15日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/07/30/browser/" title="浏览器工作原理">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">浏览器工作原理</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/07/05/stringMethod/" title="字符串操作方法总结">
+                        <span class="hidden-mobile">字符串操作方法总结</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
