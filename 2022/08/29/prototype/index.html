@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://sunburst89757.github.io/pic/prototype/6.png">
 <meta property="og:image" content="https://sunburst89757.github.io/pic/prototype/5.png">
 <meta property="article:published_time" content="2022-08-28T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-09-07T11:51:43.498Z">
+<meta property="article:modified_time" content="2022-09-08T09:34:12.551Z">
 <meta property="article:author" content="Sunburst89757">
 <meta property="article:tag" content="js高级系列">
 <meta name="twitter:card" content="summary_large_image">
@@ -296,7 +296,7 @@
 <h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>es6 之前，js 实现面向对象的方法是借助构造函数实现的</p>
 <h3 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h3><ol>
 <li>每一个对象都有自己的隐式原型对象 <code>[[prototype]]</code> ,浏览器环境和 node 都会提供一个 API <code>__proto__</code>属性让开发者访问到该对象上的原型对象,但是该 API 可能会存在一定的兼容性问题，本文都用 <code>__proto__</code>属性代替 <code>[[prototype]]</code></li>
-<li>每一个函数都有自己的显示原型对象 <code>prototype</code>,这是 ECMAScript 实现的,不存在兼容性问题,<font color = "red">注意箭头函数没有 <code>prototype</code></font></li>
+<li>每一个函数都有自己的显示原型对象 <code>prototype</code>,这是 ECMAScript 实现的,不存在兼容性问题,<font color = "red">注意箭头函数没有 <code>prototype</code>，因此不能用于构造函数</font></li>
 </ol>
 <ul>
 <li>函数的显示原型中存在一个属性<code>constructor</code>是一个函数指向它本身</li>
