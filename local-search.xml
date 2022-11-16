@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>前端开发过程中跨域的解决方案</title>
+    <link href="/2022/11/16/crossOrigin/"/>
+    <url>/2022/11/16/crossOrigin/</url>
+    
+    <content type="html"><![CDATA[<h2 id="为什么会出现跨域"><a href="#为什么会出现跨域" class="headerlink" title="为什么会出现跨域"></a>为什么会出现跨域</h2><p>在前端开发的过程中，在使用 ajax 向后端发送请求经常会出现这样一种情况。<br><img src="/pic/crossOrigin/1.png"><br>这种现象是浏览器的同源策略导致的，同源策略是浏览器的核心基础安全策略。</p><h3 id="浏览器的同源策略"><a href="#浏览器的同源策略" class="headerlink" title="浏览器的同源策略"></a>浏览器的同源策略</h3><p>同源策略是一个重要的安全策略，它用于限制一个 origin 的文档或者它加载的脚本如何能与另一个源的资源进行交互。它能帮助阻隔恶意文档，减少可能被攻击的媒介。</p><p>如果两个 URL 的 protocol、port 和 host 都相同的话，则这两个 URL 是同源。但凡其中一个存在不同的时候，就违反了同源策略，浏览器将会拦截这次请求的结果（但实际上后台服务器是接收到了这次请求并作出了响应，只是浏览器拦截了请求的结果。）</p><p>下图给出了与 URL <a href="http://store.company.com/dir/page.html">http://store.company.com/dir/page.html</a> 的源进行对比的示例：</p><p><img src="/pic/crossOrigin/2.png"></p><p>因此出于浏览器同源策略的影响，不是同源的两个 URI 进行请求时就会出现跨域的问题。<br>目前真正的解决方案往往是部署时由服务端来通过、比如配置 CORS，nginx 方向代理解决，但在开发阶段，作为前端工程师在前后端分离的项目里可以使用配置反向代理来解决该问题。</p><h2 id="反向代理的原理"><a href="#反向代理的原理" class="headerlink" title="反向代理的原理"></a>反向代理的原理</h2><p>我们以浏览器的服务是 <a href="http://localhost:3000/">http://localhost:3000</a> 后台服务器的服务是 <a href="http://localhost:8080/">http://localhost:8080</a> 为例分析，由于二者 URI 的端口不同，违反了同源策略，所以在 3000 端口的服务发起的 ajax 请求就会因为违反浏览器的同源策略而拒绝访问。</p><p><img src="/pic/crossOrigin/3.png"></p><p>但是同源的策略仅针对浏览器与服务器之间存在，我们可以在浏览器和服务器之间建立一个代理服务器来作桥梁 ，现在我们给代理服务器取 A 真正的后台服务器取 B，<br>设置的服务器 A 的协议端口与浏览器的服务一致，这样就避免了同源策略的拦截，并且服务器 A 与服务器 B 之间是不存在同源拦截的，因此，从浏览器发出请求是向 A 发送，A 立即向 B 发送请求，B 的返回值会直接给服务器 A，因为不存在同源所以不会拦截，B 服务器与浏览器的 URL 同源，故而也不会拦截，这样就解决了浏览器跨域拦截的问题。<br><img src="/pic/crossOrigin/4.png"></p><p>现在大多数的项目都是前后端分离的项目，前端项目往往都是如 webpack 或者 vite 构建的项目，笔者大多是在 webpack 配置，故以 webpack 配置方法为例</p><h2 id="webpack-配置代理服务器"><a href="#webpack-配置代理服务器" class="headerlink" title="webpack 配置代理服务器"></a>webpack 配置代理服务器</h2><p>大多数框架的配置都是 webpack 的，因此这里以 webpack 配置为例进行讲解，对于具体的框架可以查询如 vue-cli 如何配置 webpack react 同理</p><p>proxy 配置就是 webpack 提供的代理服务器的配置项,使用&#x2F;api 这个路由映射真正的后台服务器。</p><ul><li>target: 是目标服务器真正的后台服务器的地址</li><li>pathRewrite: 重写请求路径中的&#x2F;api 为空</li><li>changeOrigin 设置为 true 是应对 如果后台服务器也进行了同源校验，如果真正的后台服务开启了同源校验 ，设置为 true 可以欺骗真正后台服务器 8080 代理服务器也是 8080 的，但实际上代理服务器其实是在 3000 端口的。</li></ul><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// webpack.config.js</span><br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>  <span class="hljs-attr">devServer</span>: &#123;<br>    <span class="hljs-attr">proxy</span>: &#123;<br>      <span class="hljs-string">&quot;/api&quot;</span>: &#123;<br>        <span class="hljs-attr">target</span>: <span class="hljs-string">&quot;http://localhost:8080&quot;</span>,<br>        <span class="hljs-attr">pathRewrite</span>: &#123; <span class="hljs-string">&quot;^/api&quot;</span>: <span class="hljs-string">&quot;&quot;</span> &#125;,<br>        <span class="hljs-attr">changeOrigin</span>: <span class="hljs-literal">true</span>,<br>      &#125;,<br>    &#125;,<br>  &#125;,<br>&#125;;<br><br><span class="hljs-comment">// ajax请求 --- 映射的路由是 http://localhost:8080/api/login</span><br><span class="hljs-comment">// 但实际上服务器上是没有api的因此webpack下所以要配置pathRewrite将api这个路由进行重写&quot;&quot;</span><br><span class="hljs-comment">// 这时完整的映射是http://localhost:8080/login</span><br>axios.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;/api/login&quot;</span>);<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>前端工程化</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>webpack</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>构建二叉树的方法</title>
     <link href="/2022/11/11/constructBinaryTree/"/>
     <url>/2022/11/11/constructBinaryTree/</url>
