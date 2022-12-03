@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>使用rollup和typescript封装一个npm工具库</title>
+    <link href="/2022/12/01/rollup/"/>
+    <url>/2022/12/01/rollup/</url>
+    
+    <content type="html"><![CDATA[<p>使用 rollup 的 typescript 插件结合 tsc 编译打包出声明文件和 es5 的 js 代码适配 cjs 和 mjs 环境（不使用 bable）</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>前端工程化</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>打包工具</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>前端开发过程中跨域的解决方案</title>
     <link href="/2022/11/16/crossOrigin/"/>
     <url>/2022/11/16/crossOrigin/</url>
