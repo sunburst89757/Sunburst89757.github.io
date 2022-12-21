@@ -1,0 +1,740 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Sunburst89757">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="使用docker 和 nginx 部署使用prisma 的koa应用 和 react 18编写的后台管理项目">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker nginx 部署 node 和前端应用">
+<meta property="og:url" content="https://sunburst89757.github.io/2022/12/20/deploy/index.html">
+<meta property="og:site_name" content="Sunburst89757&#39;s blog">
+<meta property="og:description" content="使用docker 和 nginx 部署使用prisma 的koa应用 和 react 18编写的后台管理项目">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-12-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-12-21T04:52:22.110Z">
+<meta property="article:author" content="Sunburst89757">
+<meta property="article:tag" content="部署">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>docker nginx 部署 node 和前端应用 - Sunburst89757&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"sunburst89757.github.io","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Sunburst89757&#39;s blogs</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="docker nginx 部署 node 和前端应用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-12-20 00:00" pubdate>
+          星期二, 十二月 20日 2022
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          26 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">docker nginx 部署 node 和前端应用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>本文是完全面向新手的，除了包括详细的部署过程外，还包括作为一个前端开发者对于初级 linux 的学习路线和资源推荐</p>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="http://www.ee.surrey.ac.uk/Teaching/Unix/">unix 常见操作指令</a>，两小时左右就可以看完，练习时可以使用 git bash</p>
+</li>
+<li><p>docker 容器技术，理解 docker 目录挂载，docker 镜像制作，docker-compose,推荐 b 站教学视频<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV11L411g7U1/?vd_source=7ebe7f72072afb765672460a71466d1a">Docker 1 小时快速上手教程，无废话纯干货</a>以及其<a target="_blank" rel="noopener" href="https://docker.easydoc.net/doc/81170005/cCewZWoN/lTKfePfP">文档</a>.</p>
+</li>
+<li><p>nginx 反向代理,这里主要用于对前端静态资源应用的部署，所以要求不高，只需要看懂基本的服务配置即可，推荐<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1rG4y1e7BQ/?spm_id_from=333.788.top_right_bar_window_custom_collection.content.click&vd_source=7ebe7f72072afb765672460a71466d1a">nginx 一小时入门精讲课程(干货纯享版)</a>,只需看前 4p 即可。</p>
+</li>
+<li><p>一个连接服务器的终端，这里推荐 vscode 的 remote SSH。</p>
+</li>
+<li><p>一个 node 的<a target="_blank" rel="noopener" href="https://github.com/sunburst89757/react-admin-backend">后端应用</a></p>
+</li>
+<li><p>一个 react 的<a target="_blank" rel="noopener" href="https://github.com/sunburst89757/react-admin">前端应用</a></p>
+</li>
+</ol>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>部署完整的过程主要分为两步，部署前端应用和部署后端应用。</p>
+<ol>
+<li>使用 ssh 连接服务器，进入 root 目录,创建 admin 文件夹（后端应用上传）,创建 ngnix 文件夹，通过后续 docker-compose.yml 指定容器内的前端资源和 nginx 的配置</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">mkdir admin<br>mkdir nginx<br>cd nginx<br><span class="hljs-meta prompt_"># </span><span class="language-bash">前端资源文件</span><br>mkdir html<br><span class="hljs-meta prompt_"># </span><span class="language-bash">nginx配置</span><br>touch nginx.conf<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>前端应用打包,将打包的代码上传到服务器的&#x2F;root&#x2F;nginx&#x2F;html 文件夹下</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm run build<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>将下列内容放于&#x2F;root&#x2F;nginx&#x2F;nginx.conf 下的 nginx 配置</li>
+</ol>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-comment"># nginx.conf</span><br><span class="hljs-comment"># 开启文件权限为root</span><br><span class="hljs-attribute">user</span>  root;<br><span class="hljs-attribute">worker_processes</span>  <span class="hljs-number">1</span>;<br><span class="hljs-section">events</span> &#123;<br>  <span class="hljs-attribute">worker_connections</span>  <span class="hljs-number">1024</span>;<br>&#125;<br><span class="hljs-section">http</span> &#123;<br>  <span class="hljs-attribute">include</span>       mime.types;<br>  <span class="hljs-attribute">default_type</span>  application/octet-stream;<br>  <span class="hljs-attribute">sendfile</span>        <span class="hljs-literal">on</span>;<br>  <span class="hljs-attribute">keepalive_timeout</span>  <span class="hljs-number">65</span>;<br>  <span class="hljs-section">server</span> &#123;<br>      <span class="hljs-attribute">listen</span>       <span class="hljs-number">3000</span>;<br>      <span class="hljs-comment"># 一般配置域名</span><br>      <span class="hljs-attribute">server_name</span>  admin;<br>      <span class="hljs-section">location</span> / &#123;<br>          <span class="hljs-comment"># 访问3000 映射的文件路径 这里是docker内nginx的路径 前面使用docker volumn挂载过（真实代理的文件位置）</span><br>          <span class="hljs-attribute">root</span>   /usr/share/nginx/html;<br>          <span class="hljs-comment"># 防止刷新页面404</span><br>          <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ /index.html;<br>          <span class="hljs-comment"># 确定首页</span><br>          <span class="hljs-attribute">index</span>  index.html;<br>      &#125;<br>      <span class="hljs-attribute">error_page</span>   <span class="hljs-number">500</span> <span class="hljs-number">502</span> <span class="hljs-number">503</span> <span class="hljs-number">504</span>  /50x.html;<br>      <span class="hljs-section">location</span> = /50x.html &#123;<br>          <span class="hljs-attribute">root</span>   html;<br>      &#125;<br>  &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>进入 admin，使用 git 下载 node 后端源码&#x2F;或者直接上传源代码到 admin 下,注意.env 和 keys 文件夹需要手动上传</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd admin<br>git clone https://github.com/sunburst89757/react-admin-backend<br></code></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>修改.env 中 host port 和 连接的数据库名称和密码</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs env">APP_HOST=yourip<br>APP_PORT=yourport<br># DATABASE_URL= &quot;mysql://root:qweasdzxc123@localhost:3306/react_admin&quot;<br>DATABASE_URL=&quot;mysql://root:yourpassword@yourip:yourport/react_admin&quot;<br><br></code></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>docker 部署镜像 一定要修改下面数据库的密码为你自己设置的密码</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd react-admin-backend<br>docker-compose up -d<br></code></pre></td></tr></table></figure>
+
+<p>这里解释一下 docker 的配置</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-comment"># docker-compose.yml</span><br><span class="hljs-attr">version:</span> <span class="hljs-string">&quot;3&quot;</span><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">nginx:</span> <span class="hljs-comment"># 服务名称，用户自定义</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span> <span class="hljs-comment"># 镜像版本</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">3000</span><span class="hljs-string">:3000</span> <span class="hljs-comment"># 暴露端口 容器端口暴露给宿主机端口</span><br>    <span class="hljs-attr">volumes:</span> <span class="hljs-comment"># 挂载 目录挂载</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">/root/nginx/html:/usr/share/nginx/html</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">/root/nginx/nginx.conf:/etc/nginx/nginx.conf</span><br>    <span class="hljs-attr">privileged:</span> <span class="hljs-literal">true</span> <span class="hljs-comment"># 这个必须要，解决nginx的文件调用的权限问题</span><br>  <span class="hljs-attr">mysql:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:5.7.27</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">3306</span><span class="hljs-string">:3306</span><br>    <span class="hljs-attr">environment:</span> <span class="hljs-comment"># 指定用户root的密码</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">MYSQL_ROOT_PASSWORD=yourpassword</span><br>  <span class="hljs-comment">#react_admin是后端服务的名称 根据当前目录下的Dockerfile生成镜像</span><br>  <span class="hljs-attr">react_admin:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">admin:latest</span><br>    <span class="hljs-attr">build:</span> <span class="hljs-string">.</span> <span class="hljs-comment"># 表示以当前目录下的Dockerfile开始构建镜像</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">8080</span><span class="hljs-string">:8080</span><br>    <span class="hljs-attr">depends_on:</span> <span class="hljs-comment"># 依赖与mysql、redis，其实可以不填，默认已经表示可以</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">mysql</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs Docker"><span class="hljs-comment"># Dockerfile</span><br><span class="hljs-comment"># 拉取node的最新镜像</span><br><span class="hljs-keyword">FROM</span> node:latest<br><span class="hljs-comment"># 设置镜像的工作目录 /app</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span><br><br><span class="hljs-keyword">COPY</span><span class="language-bash"> package*.json ./</span><br><br><br><span class="hljs-keyword">COPY</span><span class="language-bash"> prisma ./prisma/</span><br><br><span class="hljs-comment"># COPY ENV variable</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> .<span class="hljs-built_in">env</span> ./</span><br><br><span class="hljs-comment"># COPY tsconfig.json file</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> tsconfig.json ./</span><br><br><span class="hljs-keyword">RUN</span><span class="language-bash"> npm install</span><br><br><span class="hljs-keyword">COPY</span><span class="language-bash"> . .</span><br><br><span class="hljs-comment"># 根据prisma.schema 生成新的prisma client api(ts支持)</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> npx prisma generate</span><br><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">8080</span><br><span class="hljs-comment">#  以不进行类型检查的方式启动服务</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> npx ts-node-transpile-only ./src/index.ts</span><br></code></pre></td></tr></table></figure>
+
+<p>注意若 docker 容器构建失败，修改 Dockerfile 或者 docker-compose.yml 解决后，使用 docker-compose build 重新构建容器，之后再使用 docker-compose up -d 启动容器</p>
+<ol start="7">
+<li>数据库迁移</li>
+</ol>
+<ul>
+<li>navicat 连接服务器上的 mysql yourip:3306</li>
+<li>本地数据库通过 navicat 的转储数据库文件生成 sql 文件，服务器上的 navicat 运行生成的 sql 文件即可完成数据库数据迁移 注意：转存文件时不要转存_prisma_migration 这张表</li>
+</ul>
+<ol start="8">
+<li>至此前后端应用均已部署完成，后端应用部署到了 yourip:8080 端口，前端应用部署到 yourip:3000 端口 接着可以使用下面指令进行容器日志的查询</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker logs containerId<br></code></pre></td></tr></table></figure>
+
+<ol start="9">
+<li>其他可能需要的指令</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">运行中的容器</span><br>docker container ls<br>docker ps<br><span class="hljs-meta prompt_"># </span><span class="language-bash">所有的容器</span><br>docker ps -a<br><span class="hljs-meta prompt_"># </span><span class="language-bash">所有镜像</span><br>docker images<br><span class="hljs-meta prompt_"># </span><span class="language-bash">删除镜像</span><br>docker rmi id/name<br><span class="hljs-meta prompt_"># </span><span class="language-bash">删除容器</span><br>docker rm id<br><span class="hljs-meta prompt_"># </span><span class="language-bash">重启容器 一般修改了容器的配置文件 比如说nginx的配置</span><br>docker restart id<br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看某个容器的日志</span><br>docker logs id<br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看系统进程</span><br>systemctl status docker<br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%83%A8%E7%BD%B2/">#部署</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>docker nginx 部署 node 和前端应用</div>
+      <div>https://sunburst89757.github.io/2022/12/20/deploy/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sunburst89757</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年12月20日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12/01/rollup/" title="使用rollup和typescript封装一个npm工具库">
+                        <span class="hidden-mobile">使用rollup和typescript封装一个npm工具库</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="waline"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#waline', function() {
+      Fluid.utils.createCssLink('https://lib.baomitu.com/waline/2.5.1/waline.min.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/waline/2.5.1/waline.min.js', function() {
+        var options = Object.assign(
+          {"serverURL":"https://sunburst89757-s-blogs-system-1awmbb82e-sunburst89757.vercel.app","path":"window.location.pathname","meta":["nick","mail"],"requiredMeta":["nick"],"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],"dark":"html[data-user-color-scheme=\"dark\"]","wordLimit":0,"pageSize":10,"copyright":false},
+          {
+            el: '#waline',
+            path: window.location.pathname
+          }
+        )
+        Waline.init(options);
+        Fluid.utils.waitElementVisible('#waline .vcontent', () => {
+          var imgSelector = '#waline .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
