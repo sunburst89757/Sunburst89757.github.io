@@ -16,29 +16,24 @@
   <meta name="author" content="Sunburst89757">
   <meta name="keywords" content="">
   
-    <meta name="description" content="通过配置devServer来解决">
+    <meta name="description" content="环境配置">
 <meta property="og:type" content="article">
-<meta property="og:title" content="前端开发过程中跨域的解决方案">
-<meta property="og:url" content="https://sunburst89757.github.io/2022/11/16/crossOrigin/index.html">
+<meta property="og:title" content="wsl2工作环境配置">
+<meta property="og:url" content="https://sunburst89757.github.io/2023/04/27/wsl2/index.html">
 <meta property="og:site_name" content="Sunburst89757&#39;s blog">
-<meta property="og:description" content="通过配置devServer来解决">
+<meta property="og:description" content="环境配置">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://sunburst89757.github.io/pic/crossOrigin/1.png">
-<meta property="og:image" content="https://sunburst89757.github.io/pic/crossOrigin/2.png">
-<meta property="og:image" content="https://sunburst89757.github.io/pic/crossOrigin/3.png">
-<meta property="og:image" content="https://sunburst89757.github.io/pic/crossOrigin/4.png">
-<meta property="article:published_time" content="2022-11-15T16:00:00.000Z">
+<meta property="article:published_time" content="2023-04-26T16:00:00.000Z">
 <meta property="article:modified_time" content="2023-04-27T01:52:20.285Z">
 <meta property="article:author" content="Sunburst89757">
-<meta property="article:tag" content="webpack">
+<meta property="article:tag" content="环境">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://sunburst89757.github.io/pic/crossOrigin/1.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>前端开发过程中跨域的解决方案 - Sunburst89757&#39;s blog</title>
+  <title>wsl2工作环境配置 - Sunburst89757&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -203,7 +198,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="前端开发过程中跨域的解决方案"></span>
+            <span id="subtitle" data-typed-text="wsl2工作环境配置"></span>
           
         </div>
 
@@ -214,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-11-16 00:00" pubdate>
-          星期三, 十一月 16日 2022
+        <time datetime="2023-04-27 00:00" pubdate>
+          星期四, 四月 27日 2023
         </time>
       </span>
     
@@ -226,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.7k 字
+          2.2k 字
         
       </span>
     
@@ -237,7 +232,7 @@
         
         
         
-          14 分钟
+          19 分钟
         
       </span>
     
@@ -283,30 +278,94 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">前端开发过程中跨域的解决方案</h1>
+            <h1 style="display: none">wsl2工作环境配置</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="为什么会出现跨域"><a href="#为什么会出现跨域" class="headerlink" title="为什么会出现跨域"></a>为什么会出现跨域</h2><p>在前端开发的过程中，在使用 ajax 向后端发送请求经常会出现这样一种情况。<br><img src="/pic/crossOrigin/1.png" srcset="/img/loading.gif" lazyload><br>这种现象是浏览器的同源策略导致的，同源策略是浏览器的核心基础安全策略。</p>
-<h3 id="浏览器的同源策略"><a href="#浏览器的同源策略" class="headerlink" title="浏览器的同源策略"></a>浏览器的同源策略</h3><p>同源策略是一个重要的安全策略，它用于限制一个 origin 的文档或者它加载的脚本如何能与另一个源的资源进行交互。它能帮助阻隔恶意文档，减少可能被攻击的媒介。</p>
-<p>如果两个 URL 的 protocol、port 和 host 都相同的话，则这两个 URL 是同源。但凡其中一个存在不同的时候，就违反了同源策略，浏览器将会拦截这次请求的结果（但实际上后台服务器是接收到了这次请求并作出了响应，只是浏览器拦截了请求的结果。）</p>
-<p>下图给出了与 URL <a target="_blank" rel="noopener" href="http://store.company.com/dir/page.html">http://store.company.com/dir/page.html</a> 的源进行对比的示例：</p>
-<p><img src="/pic/crossOrigin/2.png" srcset="/img/loading.gif" lazyload></p>
-<p>因此出于浏览器同源策略的影响，不是同源的两个 URI 进行请求时就会出现跨域的问题。<br>目前真正的解决方案往往是部署时由服务端来通过、比如配置 CORS，nginx 方向代理解决，但在开发阶段，作为前端工程师在前后端分离的项目里可以使用配置反向代理来解决该问题。</p>
-<h2 id="反向代理的原理"><a href="#反向代理的原理" class="headerlink" title="反向代理的原理"></a>反向代理的原理</h2><p>我们以浏览器的服务是 <a target="_blank" rel="noopener" href="http://localhost:3000/">http://localhost:3000</a> 后台服务器的服务是 <a target="_blank" rel="noopener" href="http://localhost:8080/">http://localhost:8080</a> 为例分析，由于二者 URI 的端口不同，违反了同源策略，所以在 3000 端口的服务发起的 ajax 请求就会因为违反浏览器的同源策略而拒绝访问。</p>
-<p><img src="/pic/crossOrigin/3.png" srcset="/img/loading.gif" lazyload></p>
-<p>但是同源的策略仅针对浏览器与服务器之间存在，我们可以在浏览器和服务器之间建立一个代理服务器来作桥梁 ，现在我们给代理服务器取 A 真正的后台服务器取 B，<br>设置的服务器 A 的协议端口与浏览器的服务一致，这样就避免了同源策略的拦截，并且服务器 A 与服务器 B 之间是不存在同源拦截的，因此，从浏览器发出请求是向 A 发送，A 立即向 B 发送请求，B 的返回值会直接给服务器 A，因为不存在同源所以不会拦截，B 服务器与浏览器的 URL 同源，故而也不会拦截，这样就解决了浏览器跨域拦截的问题。<br><img src="/pic/crossOrigin/4.png" srcset="/img/loading.gif" lazyload></p>
-<p>现在大多数的项目都是前后端分离的项目，前端项目往往都是如 webpack 或者 vite 构建的项目，笔者大多是在 webpack 配置，故以 webpack 配置方法为例</p>
-<h2 id="webpack-配置代理服务器"><a href="#webpack-配置代理服务器" class="headerlink" title="webpack 配置代理服务器"></a>webpack 配置代理服务器</h2><p>大多数框架的配置都是 webpack 的，因此这里以 webpack 配置为例进行讲解，对于具体的框架可以查询如 vue-cli 如何配置 webpack react 同理</p>
-<p>proxy 配置就是 webpack 提供的代理服务器的配置项,使用&#x2F;api 这个路由映射真正的后台服务器。</p>
-<ul>
-<li>target: 是目标服务器真正的后台服务器的地址</li>
-<li>pathRewrite: 重写请求路径中的&#x2F;api 为空</li>
-<li>changeOrigin 设置为 true 是应对 如果后台服务器也进行了同源校验，如果真正的后台服务开启了同源校验 ，设置为 true 可以欺骗真正后台服务器 8080 代理服务器也是 8080 的，但实际上代理服务器其实是在 3000 端口的。</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// webpack.config.js</span><br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>  <span class="hljs-attr">devServer</span>: &#123;<br>    <span class="hljs-attr">proxy</span>: &#123;<br>      <span class="hljs-string">&quot;/api&quot;</span>: &#123;<br>        <span class="hljs-attr">target</span>: <span class="hljs-string">&quot;http://localhost:8080&quot;</span>,<br>        <span class="hljs-attr">pathRewrite</span>: &#123; <span class="hljs-string">&quot;^/api&quot;</span>: <span class="hljs-string">&quot;&quot;</span> &#125;,<br>        <span class="hljs-attr">changeOrigin</span>: <span class="hljs-literal">true</span>,<br>      &#125;,<br>    &#125;,<br>  &#125;,<br>&#125;;<br><br><span class="hljs-comment">// ajax请求 --- 映射的路由是 http://localhost:8080/api/login</span><br><span class="hljs-comment">// 但实际上服务器上是没有api的因此webpack下所以要配置pathRewrite将api这个路由进行重写&quot;&quot;</span><br><span class="hljs-comment">// 这时完整的映射是http://localhost:8080/login</span><br>axios.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;/api/login&quot;</span>);<br></code></pre></td></tr></table></figure>
+                <h3 id="wsl2安装"><a href="#wsl2安装" class="headerlink" title="wsl2安装"></a>wsl2安装</h3><ol>
+<li>wsl –install</li>
+<li>配置账号密码</li>
+<li>vscode安装插件打开wsl</li>
+</ol>
+<h3 id="翻墙"><a href="#翻墙" class="headerlink" title="翻墙"></a>翻墙</h3><ol>
+<li>clash开启allow lan wsl访问与主机同样的网络环境</li>
+<li>.bashrc 配置快捷指令<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 位于.zshrc内  未安装zsh 就放在 .bashrc</span><br><span class="hljs-comment"># 代理配置 ---共享windows翻墙网络</span><br><span class="hljs-built_in">export</span> hostip=$(<span class="hljs-built_in">cat</span> /etc/resolv.conf |grep -oP <span class="hljs-string">&#x27;(?&lt;=nameserver\ ).*&#x27;</span>)<br><span class="hljs-built_in">alias</span> setss=<span class="hljs-string">&#x27;export all_proxy=&quot;http://$&#123;hostip&#125;:7890&quot;;&#x27;</span><br><span class="hljs-built_in">alias</span> unsetss=<span class="hljs-string">&#x27;unset all_proxy&#x27;</span><br></code></pre></td></tr></table></figure></li>
+<li>新的终端里使用setss<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 成功表明翻墙成功</span><br>curl google.com<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="安装oh-my-zsh"><a href="#安装oh-my-zsh" class="headerlink" title="安装oh my zsh"></a>安装oh my zsh</h3><ol>
+<li>更新软件包 （不能翻墙就使用阿里云代理）</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt update &amp;&amp; sudo apt upgrade<br></code></pre></td></tr></table></figure>
 
+<ol start="2">
+<li>安装zsh(一定要翻墙)</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">apt install zsh<br><span class="hljs-comment">## 根据指令选择默认终端为zsh</span><br></code></pre></td></tr></table></figure>
+<ol start="3">
+<li>安装oh-my-zsh</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sh -c <span class="hljs-string">&quot;<span class="hljs-subst">$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)</span>&quot;</span><br></code></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>安装 zsh-syntax-highlighting 和 zsh-autosuggestions 插件</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/zsh-users/zsh-autosuggestions <span class="hljs-variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-autosuggestions<br><br>git <span class="hljs-built_in">clone</span> https://github.com/zsh-users/zsh-syntax-highlighting.git <span class="hljs-variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-syntax-highlighting<br><br><br></code></pre></td></tr></table></figure>
+
+<p>在~&#x2F;.zshrc 内添加插件</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs makefile">plugins=( <br>    <span class="hljs-comment"># other plugins...</span><br>    zsh-autosuggestions<br>    zsh-syntax-highlighting<br>)<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="nvm配置"><a href="#nvm配置" class="headerlink" title="nvm配置"></a>nvm配置</h3><ol>
+<li>安装(翻墙)</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash<br><br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>加载环境变量,在~&#x2F;.zshrc 内添加</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># nvm配置</span><br><span class="hljs-built_in">export</span> NVM_DIR=<span class="hljs-string">&quot;<span class="hljs-subst">$([ -z <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;XDG_CONFIG_HOME-&#125;</span>&quot;</span> ] &amp;&amp; printf %s <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;HOME&#125;</span>/.nvm&quot;</span> || printf %s <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;XDG_CONFIG_HOME&#125;</span>/nvm&quot;</span>)</span>&quot;</span><br>[ -s <span class="hljs-string">&quot;<span class="hljs-variable">$NVM_DIR</span>/nvm.sh&quot;</span> ] &amp;&amp; \. <span class="hljs-string">&quot;<span class="hljs-variable">$NVM_DIR</span>/nvm.sh&quot;</span> <span class="hljs-comment"># This loads nvm</span><br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>配置nvm node的镜像代理  ~&#x2F;.nvm&#x2F;nvm.sh 找到NVM_NODEJS_ORG_MIRROR 修改为淘宝的代理即可</li>
+</ol>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ruby">&#123;<span class="hljs-variable constant_">NVM_NODEJS_ORG_MIRROR</span><span class="hljs-symbol">:-https</span><span class="hljs-symbol">://npmmirror</span>.com/mirrors/node/<br></code></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>安装nodejs lts</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nvm install --lts<br></code></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>配置npm淘宝代理</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">npm config <span class="hljs-built_in">set</span> registry https://registry.npmmirror.com<br></code></pre></td></tr></table></figure>
+<h3 id="配置git"><a href="#配置git" class="headerlink" title="配置git"></a>配置git</h3><ol>
+<li>配置git用户名和邮箱</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">git config --global user.name sunburst89757<br>git config --global user.email 3520279278@qq.com<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>配置多环境ssh</li>
+</ol>
+<ul>
+<li>github 的 ssh</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh-keygen -t rsa -C <span class="hljs-string">&#x27;3520279278@qq.com&#x27;</span> -f ~/.ssh/github_id_rsa<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>gitee 的 ssh</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh-keygen -t rsa -C <span class="hljs-string">&#x27;3520279278@qq.com&#x27;</span> -f ~/.ssh/gitee_id_rsa<br></code></pre></td></tr></table></figure>
+<ol start="3">
+<li>github_id_rsa.pub 放到github ssh公钥里，gitee同理</li>
+<li>~&#x2F;.ssh 下新建 config文件</li>
+</ol>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment"># gitee</span><br>Host gitee.com<br>HostName gitee.com<br>PreferredAuthentications publickey<br>IdentityFile ~<span class="hljs-regexp">/.ssh/gi</span>tee_id_rsa<br><br><span class="hljs-comment"># github</span><br>Host github.com<br>HostName github.com<br>PreferredAuthentications publickey<br>IdentityFile ~<span class="hljs-regexp">/.ssh/gi</span>thub_id_rsa<br><br></code></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>测试是否连通</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh -T git@gitee.com<br>ssh -T git@github.com<br>ssh -T git@xxxx.com<br></code></pre></td></tr></table></figure>
                 
               </div>
             
@@ -324,7 +383,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96/" class="category-chain-item">前端工程化</a>
+  <a href="/categories/%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" class="category-chain-item">环境配置</a>
   
   
 
@@ -339,7 +398,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/webpack/">#webpack</a>
+        <a href="/tags/%E7%8E%AF%E5%A2%83/">#环境</a>
       
     </div>
   
@@ -351,8 +410,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>前端开发过程中跨域的解决方案</div>
-      <div>https://sunburst89757.github.io/2022/11/16/crossOrigin/</div>
+      <div>wsl2工作环境配置</div>
+      <div>https://sunburst89757.github.io/2023/04/27/wsl2/</div>
     </div>
     <div class="license-meta">
       
@@ -364,7 +423,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年11月16日</div>
+          <div>2023年4月27日</div>
         </div>
       
       
@@ -394,18 +453,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/12/01/rollup/" title="使用rollup和typescript封装一个npm工具库">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">使用rollup和typescript封装一个npm工具库</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/11/11/constructBinaryTree/" title="构建二叉树的方法">
-                        <span class="hidden-mobile">构建二叉树的方法</span>
+                      <a href="/2023/02/18/concurrencyControl/" title="promise实现并发控制和错误重试">
+                        <span class="hidden-mobile">promise实现并发控制和错误重试</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
